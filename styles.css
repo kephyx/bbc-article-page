@@ -161,11 +161,14 @@ button {
 
 .bbc-logo {
     display: block;
+    /* Ensure the SVG is visible */
+    width: 84px; /* Explicitly set width */
+    height: 24px; /* Explicitly set height */
 }
 
 .bbc-logo svg {
-    width: 84px;
-    height: 24px;
+    width: 100%; /* Make SVG fill its container */
+    height: 100%; /* Make SVG fill its container */
     fill: var(--bbc-white);
 }
 
@@ -801,4 +804,6 @@ button {
         max-height: 300px;
     }
 }
+
+
 
