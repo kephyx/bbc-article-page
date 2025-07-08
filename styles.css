@@ -354,12 +354,16 @@ a:visited {
 /* Article Body */
 .hero-image {
     margin-bottom: 24px;
+    width: 100%; /* Ensure it takes full width of its container */
+    max-height: 500px; /* Limit height for large screens */
+    overflow: hidden; /* Hide overflow if image is larger than container */
 }
 
 .hero-image img {
     width: 100%;
-    height: auto;
+    height: 100%; /* Fill the container height */
     display: block;
+    object-fit: cover; /* Ensure image covers the area without distortion */
 }
 
 .hero-image figcaption {
@@ -465,6 +469,29 @@ a:visited {
     font-size: 14px;
 }
 
+/* Inline Images */
+.inline-image {
+    margin: 24px 0;
+    text-align: center;
+    width: 100%; /* Ensure it takes full width of its container */
+    max-width: 600px; /* Limit width for larger images */
+    margin-left: auto; /* Center the image */
+    margin-right: auto; /* Center the image */
+}
+
+.inline-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.inline-image figcaption {
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--bbc-mid-grey);
+}
+
 /* Story Tags */
 .story-tags {
     margin: 32px 0;
@@ -535,6 +562,13 @@ a:visited {
     height: 120px;
     background-color: var(--bbc-light-grey);
     margin-bottom: 8px;
+    overflow: hidden; /* Hide overflow for images */
+}
+
+.related-image-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure images fill the placeholder without distortion */
 }
 
 .related-story h4 {
@@ -704,6 +738,13 @@ a:visited {
     height: 100px;
     background-color: var(--bbc-light-grey);
     margin-bottom: 8px;
+    overflow: hidden; /* Hide overflow for images */
+}
+
+.feature-image-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure images fill the placeholder without distortion */
 }
 
 .feature-item h4 {
@@ -880,4 +921,5 @@ a:visited {
         grid-template-columns: 1fr;
     }
 }
+
 
