@@ -1,139 +1,128 @@
 // BBC News Website JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Update timestamp to show proper format
-    const timestamp = document.querySelector('.timestamp');
-    if (timestamp) {
-        const date = new Date(timestamp.getAttribute('datetime'));
-        const options = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        };
-        timestamp.textContent = date.toLocaleDateString('en-GB', options);
-    }
-    
-    // Breaking news ticker animation
-    const breakingText = document.querySelector('.breaking-text');
-    if (breakingText) {
-        let position = 0;
-        const speed = 0.5;
-        const width = breakingText.offsetWidth;
-        const containerWidth = breakingText.parentElement.offsetWidth;
-        
-        if (width > containerWidth) {
-            setInterval(() => {
-                position -= speed;
-                if (position < -width) {
-                    position = containerWidth;
-                }
-                breakingText.style.transform = `translateX(${position}px)`;
-            }, 20);
-        }
-    }
-    
-    // Share buttons functionality
-    const shareButtons = document.querySelectorAll('.share-btn');
-    shareButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const platform = this.classList.contains('facebook') ? 'Facebook' :
-                            this.classList.contains('twitter') ? 'Twitter' :
-                            this.classList.contains('email') ? 'Email' : 'other';
-            
-            console.log(`Share on ${platform} clicked`);
-            
-            // In a real implementation, this would open share dialogs
-            if (platform === 'Facebook') {
-                window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank');
-            } else if (platform === 'Twitter') {
-                window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(document.title), '_blank');
-            } else if (platform === 'Email') {
-                window.location.href = 'mailto:?subject=' + encodeURIComponent(document.title) + '&body=' + encodeURIComponent(window.location.href);
+    // Share button functionality
+    const shareButton = document.querySelector('.share-button');
+    if (shareButton) {
+        shareButton.addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                })
+                .catch(error => console.log('Error sharing:', error));
+            } else {
+                alert('Share functionality is not available on this browser. Please copy the URL manually.');
             }
         });
-    });
+    }
     
-    // Video play button functionality
+    // Save button functionality
+    const saveButton = document.querySelector('.save-button');
+    if (saveButton) {
+        saveButton.addEventListener('click', function() {
+            // Toggle saved state
+            this.classList.toggle('saved');
+            
+            if (this.classList.contains('saved')) {
+                // Change icon to filled bookmark
+                const iconElement = this.querySelector('i');
+                if (iconElement) {
+                    iconElement.classList.remove('far');
+                    iconElement.classList.add('fas');
+                }
+                alert('Article saved to your reading list');
+            } else {
+                // Change icon back to outline bookmark
+                const iconElement = this.querySelector('i');
+                if (iconElement) {
+                    iconElement.classList.remove('fas');
+                    iconElement.classList.add('far');
+                }
+                alert('Article removed from your reading list');
+            }
+        });
+    }
+    
+    // Mobile menu toggle
+    const menuButton = document.querySelector('.menu-button');
+    if (menuButton) {
+        menuButton.addEventListener('click', function() {
+            alert('Menu functionality would open a full navigation panel');
+        });
+    }
+    
+    // Add play functionality to video thumbnails
     const playButtons = document.querySelectorAll('.play-button');
     playButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
             const mediaItem = this.closest('.media-item');
-            const title = mediaItem.querySelector('h4') || mediaItem.querySelector('h5');
-            
-            console.log('Video play clicked:', title ? title.textContent : 'Unknown video');
-            
-            // In a real implementation, this would play the video
-            alert('Video would play: ' + (title ? title.textContent : 'BBC Video'));
+            if (mediaItem) {
+                const title = mediaItem.querySelector('h3').textContent;
+                alert(`Playing: ${title}`);
+            }
         });
     });
     
-    // Sticky navigation on scroll
-    const newsNav = document.querySelector('.news-nav');
-    const newsNavTop = newsNav ? newsNav.offsetTop : 0;
-    
-    function handleScroll() {
-        if (newsNav && window.scrollY > newsNavTop) {
-            newsNav.classList.add('sticky');
-            document.body.style.paddingTop = newsNav.offsetHeight + 'px';
-        } else if (newsNav) {
-            newsNav.classList.remove('sticky');
-            document.body.style.paddingTop = 0;
-        }
-    }
-    
-    window.addEventListener('scroll', handleScroll);
-    
-    // Mobile navigation toggle
-    const mobileNavToggle = document.createElement('button');
-    mobileNavToggle.className = 'mobile-nav-toggle';
-    mobileNavToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    mobileNavToggle.setAttribute('aria-label', 'Toggle navigation menu');
-    
-    const topNav = document.querySelector('.top-nav');
-    if (topNav && window.innerWidth < 768) {
-        topNav.parentNode.insertBefore(mobileNavToggle, topNav);
-        topNav.classList.add('mobile-hidden');
-        
-        mobileNavToggle.addEventListener('click', function() {
-            topNav.classList.toggle('mobile-hidden');
-            this.innerHTML = topNav.classList.contains('mobile-hidden') ? 
-                '<i class="fas fa-bars"></i>' : 
-                '<i class="fas fa-times"></i>';
+    // Handle responsive navigation
+    function handleResponsiveNav() {
+        const navContainers = document.querySelectorAll('.nav-container');
+        navContainers.forEach(container => {
+            // Check if navigation is scrollable
+            if (container.scrollWidth > container.clientWidth) {
+                container.style.paddingBottom = '4px'; // Add space for scrollbar
+            } else {
+                container.style.paddingBottom = '0';
+            }
         });
     }
     
-    // Add responsive styles for mobile navigation
-    if (window.innerWidth < 768) {
-        const style = document.createElement('style');
-        style.textContent = `
-            .mobile-nav-toggle {
-                background: none;
-                border: none;
-                color: white;
-                font-size: 24px;
-                cursor: pointer;
-                display: block;
-                padding: 8px;
-            }
-            
-            .mobile-hidden {
-                display: none !important;
-            }
-            
-            .sticky {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 1000;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-        `;
-        document.head.appendChild(style);
+    // Run on load and resize
+    handleResponsiveNav();
+    window.addEventListener('resize', handleResponsiveNav);
+    
+    // Lazy load images
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    const src = img.getAttribute('data-src');
+                    if (src) {
+                        img.src = src;
+                        img.removeAttribute('data-src');
+                    }
+                    observer.unobserve(img);
+                }
+            });
+        });
+        
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+    } else {
+        // Fallback for browsers that don't support IntersectionObserver
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            img.src = img.getAttribute('data-src');
+            img.removeAttribute('data-src');
+        });
     }
+    
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId !== '#') {
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
 });
 
